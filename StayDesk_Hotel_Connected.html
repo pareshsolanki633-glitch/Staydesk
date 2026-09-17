@@ -1,0 +1,2579 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Stay Desk Basic</title>
+
+<style>
+*{box-sizing:border-box}
+body{
+    margin:0;
+    font-family:Arial,Helvetica,sans-serif;
+    background:#f4f6f8;
+    color:#202124;
+}
+button,input,select,textarea{font:inherit}
+button{cursor:pointer}
+
+.login{
+    min-height:100vh;
+    display:flex;
+    align-items:center;
+    justify-content:center;
+    background:linear-gradient(135deg,#172554,#2563eb);
+    padding:20px;
+}
+.login-box{
+    background:white;
+    width:100%;
+    max-width:420px;
+    padding:30px;
+    border-radius:18px;
+    box-shadow:0 15px 40px rgba(0,0,0,.25);
+}
+.logo{
+    text-align:center;
+    font-size:30px;
+    font-weight:800;
+    margin-bottom:5px;
+}
+.subtitle{
+    text-align:center;
+    color:#666;
+    margin-bottom:25px;
+}
+
+.app{display:none;min-height:100vh}
+.sidebar{
+    position:fixed;
+    left:0;
+    top:0;
+    bottom:0;
+    width:240px;
+    background:#111827;
+    color:white;
+    padding:18px 12px;
+    overflow-y:auto;
+}
+.brand{
+    font-size:23px;
+    font-weight:800;
+    padding:10px;
+    margin-bottom:15px;
+}
+.menu-btn{
+    width:100%;
+    text-align:left;
+    border:0;
+    background:transparent;
+    color:#d1d5db;
+    padding:12px;
+    border-radius:9px;
+    margin:2px 0;
+}
+.menu-btn:hover,.menu-btn.active{
+    background:#2563eb;
+    color:white;
+}
+.logout{margin-top:15px;background:#991b1b;color:white}
+
+.main{
+    margin-left:240px;
+    padding:20px;
+}
+.topbar{
+    background:white;
+    border-radius:14px;
+    padding:15px 20px;
+    margin-bottom:20px;
+    display:flex;
+    justify-content:space-between;
+    align-items:center;
+    gap:15px;
+}
+.search{
+    width:100%;
+    max-width:500px;
+    padding:12px 15px;
+    border:1px solid #ddd;
+    border-radius:10px;
+}
+
+.page{display:none}
+.page.active{display:block}
+
+h1{margin-top:0}
+h2{margin-top:0}
+
+.cards{
+    display:grid;
+    grid-template-columns:repeat(auto-fit,minmax(160px,1fr));
+    gap:15px;
+    margin-bottom:20px;
+}
+.card{
+    background:white;
+    padding:18px;
+    border-radius:14px;
+    box-shadow:0 2px 8px rgba(0,0,0,.05);
+}
+.card-title{font-size:13px;color:#777}
+.card-value{font-size:25px;font-weight:800;margin-top:7px}
+
+.panel{
+    background:white;
+    padding:20px;
+    border-radius:14px;
+    margin-bottom:20px;
+    box-shadow:0 2px 8px rgba(0,0,0,.05);
+}
+
+.grid{
+    display:grid;
+    grid-template-columns:repeat(2,1fr);
+    gap:15px;
+}
+.field{margin-bottom:12px}
+.field label{
+    display:block;
+    font-size:13px;
+    font-weight:700;
+    margin-bottom:6px;
+}
+.field input,.field select,.field textarea{
+    width:100%;
+    padding:11px;
+    border:1px solid #d1d5db;
+    border-radius:8px;
+    background:white;
+}
+.field textarea{min-height:80px}
+
+.full{grid-column:1/-1}
+
+.btn{
+    border:0;
+    border-radius:8px;
+    padding:10px 15px;
+    background:#2563eb;
+    color:white;
+    font-weight:700;
+}
+.btn:hover{opacity:.9}
+.btn.green{background:#15803d}
+.btn.red{background:#dc2626}
+.btn.gray{background:#6b7280}
+.btn.orange{background:#ea580c}
+.btn.small{padding:7px 10px;font-size:12px}
+
+.table-wrap{
+    width:100%;
+    overflow-x:auto;
+}
+table{
+    width:100%;
+    border-collapse:collapse;
+    min-width:750px;
+}
+th,td{
+    padding:11px 9px;
+    border-bottom:1px solid #eee;
+    text-align:left;
+    font-size:13px;
+}
+th{
+    background:#f8fafc;
+    font-weight:800;
+}
+.status{
+    display:inline-block;
+    padding:5px 8px;
+    border-radius:20px;
+    font-size:11px;
+    font-weight:700;
+}
+.available{background:#dcfce7;color:#166534}
+.occupied{background:#fee2e2;color:#991b1b}
+.cleaning{background:#fef3c7;color:#92400e}
+.maintenance{background:#e5e7eb;color:#374151}
+.pending{color:#dc2626;font-weight:700}
+.settled{color:#15803d;font-weight:700}
+
+.alert{
+    padding:12px;
+    border-radius:8px;
+    margin-bottom:15px;
+    display:none;
+}
+.alert.show{display:block}
+.alert.success{background:#dcfce7;color:#166534}
+.alert.error{background:#fee2e2;color:#991b1b}
+
+.room-grid{
+    display:grid;
+    grid-template-columns:repeat(auto-fill,minmax(150px,1fr));
+    gap:15px;
+}
+.room{
+    background:white;
+    border-radius:14px;
+    padding:18px;
+    border-left:5px solid #22c55e;
+    box-shadow:0 2px 8px rgba(0,0,0,.05);
+}
+.room.occupied{border-left-color:#ef4444}
+.room.cleaning{border-left-color:#f59e0b}
+.room.maintenance{border-left-color:#6b7280}
+
+.report-filter{
+    display:flex;
+    gap:10px;
+    flex-wrap:wrap;
+    align-items:end;
+}
+.report-filter .field{
+    min-width:180px;
+}
+
+.modal{
+    position:fixed;
+    inset:0;
+    background:rgba(0,0,0,.55);
+    display:none;
+    align-items:center;
+    justify-content:center;
+    padding:20px;
+    z-index:1000;
+}
+.modal.show{display:flex}
+.modal-box{
+    width:100%;
+    max-width:700px;
+    max-height:90vh;
+    overflow:auto;
+    background:white;
+    border-radius:15px;
+    padding:22px;
+}
+
+.bill-preview{
+    border:1px solid #ddd;
+    padding:20px;
+    background:white;
+}
+.bill-head{
+    text-align:center;
+    border-bottom:2px solid #222;
+    padding-bottom:15px;
+    margin-bottom:15px;
+}
+.total-box{
+    display:flex;
+    justify-content:space-between;
+    padding:8px 0;
+}
+.grand-total{
+    font-size:20px;
+    font-weight:800;
+    border-top:2px solid #222;
+    margin-top:8px;
+    padding-top:10px;
+}
+
+@media(max-width:800px){
+    .sidebar{
+        position:static;
+        width:100%;
+        height:auto;
+    }
+    .main{margin-left:0}
+    .app{display:none}
+    .grid{grid-template-columns:1fr}
+    .full{grid-column:auto}
+    .topbar{flex-direction:column;align-items:stretch}
+}
+
+@media print{
+    .sidebar,.topbar,.no-print{display:none!important}
+    .main{margin:0;padding:0}
+    .page{display:none!important}
+    #billPrintPage{display:block!important}
+}
+</style>
+</head>
+
+<body>
+
+<!-- LOGIN -->
+<div id="loginScreen" class="login">
+    <div class="login-box">
+        <div class="logo">🏨 Stay Desk Basic</div>
+        <div class="subtitle">Home Stay • Guest House • Hotel</div>
+
+        <div class="field">
+            <label>Hotel ID</label>
+            <input id="loginHotelId" placeholder="Enter Hotel ID">
+        </div>
+
+        <div class="field">
+            <label>License Key</label>
+            <input id="loginLicense" placeholder="Enter License Key">
+        </div>
+
+        <button class="btn" style="width:100%" onclick="activateDemo()">
+            Activate & Login
+        </button>
+
+        <div id="loginMsg" class="alert" style="margin-top:15px"></div>
+
+        <p style="font-size:12px;color:#777;text-align:center;margin-top:20px">
+            Prototype mode for testing
+        </p>
+    </div>
+</div>
+
+<!-- APP -->
+<div id="app" class="app">
+
+<aside class="sidebar">
+    <div class="brand">🏨 Stay Desk</div>
+
+    <button class="menu-btn active" onclick="showPage('dashboard',this)">📊 Dashboard</button>
+    <button class="menu-btn" onclick="showPage('rooms',this)">🚪 Rooms</button>
+    <button class="menu-btn" onclick="showPage('checkin',this)">🧑 New Check-in</button>
+    <button class="menu-btn" onclick="showPage('guests',this)">👤 Guests</button>
+    <button class="menu-btn" onclick="showPage('checkout',this)">🚪 Check-out</button>
+    <button class="menu-btn" onclick="showPage('bills',this)">🧾 Bills</button>
+    <button class="menu-btn" onclick="showPage('settlement',this)">💰 Bill Settlement</button>
+    <button class="menu-btn" onclick="showPage('daily',this)">📅 Daily Report</button>
+    <button class="menu-btn" onclick="showPage('monthly',this)">📈 Monthly Sales</button>
+    <button class="menu-btn" onclick="showPage('backup',this)">💾 Backup & Restore</button>
+    <button class="menu-btn" onclick="showPage('settings',this)">⚙️ Settings</button>
+
+    <button class="menu-btn logout" onclick="logout()">Logout</button>
+</aside>
+
+<main class="main">
+
+<div class="topbar">
+    <input class="search" id="globalSearch"
+           placeholder="Search Guest / Mobile / Bill / Room / ID..."
+           oninput="globalSearch()">
+    <strong id="hotelNameTop">My Hotel</strong>
+</div>
+
+<!-- DASHBOARD -->
+<section id="dashboard" class="page active">
+    <h1>Dashboard</h1>
+
+    <div class="cards">
+        <div class="card">
+            <div class="card-title">Total Rooms</div>
+            <div class="card-value" id="dashRooms">0</div>
+        </div>
+        <div class="card">
+            <div class="card-title">Available</div>
+            <div class="card-value" id="dashAvailable">0</div>
+        </div>
+        <div class="card">
+            <div class="card-title">Occupied</div>
+            <div class="card-value" id="dashOccupied">0</div>
+        </div>
+        <div class="card">
+            <div class="card-title">Today's Check-in</div>
+            <div class="card-value" id="dashCheckin">0</div>
+        </div>
+        <div class="card">
+            <div class="card-title">Today's Check-out</div>
+            <div class="card-value" id="dashCheckout">0</div>
+        </div>
+        <div class="card">
+            <div class="card-title">Today's Collection</div>
+            <div class="card-value" id="dashCollection">₹0</div>
+        </div>
+    </div>
+
+    <div class="panel">
+        <h2>Quick Actions</h2>
+        <button class="btn" onclick="showPage('checkin')">+ New Check-in</button>
+        <button class="btn green" onclick="showPage('rooms')">Rooms</button>
+        <button class="btn orange" onclick="showPage('settlement')">Bill Settlement</button>
+        <button class="btn gray" onclick="showPage('monthly')">Monthly Report</button>
+    </div>
+</section>
+
+<!-- ROOMS -->
+<section id="rooms" class="page">
+    <h1>Room Management</h1>
+
+    <div class="panel">
+        <h2>Add Room</h2>
+        <div class="grid">
+            <div class="field">
+                <label>Room Number</label>
+                <input id="roomNo">
+            </div>
+            <div class="field">
+                <label>Room Type</label>
+                <select id="roomType">
+                    <option>Standard</option>
+                    <option>Deluxe</option>
+                    <option>Super Deluxe</option>
+                    <option>Family</option>
+                </select>
+            </div>
+            <div class="field">
+                <label>Room Rate</label>
+                <input id="roomRate" type="number">
+            </div>
+        </div>
+        <button class="btn" onclick="addRoom()">Add Room</button>
+    </div>
+
+    <div class="room-grid" id="roomGrid"></div>
+</section>
+
+<!-- CHECK-IN -->
+<section id="checkin" class="page">
+    <h1>New Guest Check-in</h1>
+
+    <div id="checkinMsg" class="alert"></div>
+
+    <div class="panel">
+        <h2>Guest Details</h2>
+
+        <div class="grid">
+            <div class="field">
+                <label>Guest Name *</label>
+                <input id="guestName">
+            </div>
+
+            <div class="field">
+                <label>Mobile Number *</label>
+                <input id="guestMobile">
+            </div>
+
+            <div class="field">
+                <label>Email</label>
+                <input id="guestEmail">
+            </div>
+
+            <div class="field">
+                <label>Address *</label>
+                <input id="guestAddress">
+            </div>
+
+            <div class="field">
+                <label>City</label>
+                <input id="guestCity">
+            </div>
+
+            <div class="field">
+                <label>State</label>
+                <input id="guestState">
+            </div>
+
+            <div class="field">
+                <label>Country</label>
+                <input id="guestCountry" value="India">
+            </div>
+
+            <div class="field">
+                <label>Nationality</label>
+                <input id="guestNationality" value="Indian">
+            </div>
+
+            <div class="field">
+                <label>ID Type *</label>
+                <select id="idType">
+                    <option>Aadhaar</option>
+                    <option>Passport</option>
+                    <option>Driving Licence</option>
+                    <option>Voter ID</option>
+                    <option>Other</option>
+                </select>
+            </div>
+
+            <div class="field">
+                <label>ID Number *</label>
+                <input id="idNumber">
+            </div>
+
+            <div class="field">
+                <label>ID Front Photo</label>
+                <input id="idFront" type="file" accept="image/*">
+            </div>
+
+            <div class="field">
+                <label>ID Back Photo</label>
+                <input id="idBack" type="file" accept="image/*">
+            </div>
+        </div>
+    </div>
+
+    <div class="panel">
+        <h2>Stay Details</h2>
+
+        <div class="grid">
+
+            <div class="field">
+                <label>Room Number *</label>
+                <select id="checkinRoom"></select>
+            </div>
+
+            <div class="field">
+                <label>Room Type</label>
+                <input id="checkinRoomType" readonly>
+            </div>
+
+            <div class="field">
+                <label>Check-in Date</label>
+                <input id="checkinDate" type="date">
+            </div>
+
+            <div class="field">
+                <label>Check-in Time</label>
+                <input id="checkinTime" type="time">
+            </div>
+
+            <div class="field">
+                <label>Expected Check-out</label>
+                <input id="checkoutDate" type="date">
+            </div>
+
+            <div class="field">
+                <label>Number of Nights</label>
+                <input id="nights" type="number" min="1" value="1">
+            </div>
+
+            <div class="field">
+                <label>Adults / Pax</label>
+                <input id="adults" type="number" min="1" value="1">
+            </div>
+
+            <div class="field">
+                <label>Kids</label>
+                <input id="kids" type="number" min="0" value="0">
+            </div>
+
+            <div class="field">
+                <label>Extra Person</label>
+                <input id="extraPerson" type="number" min="0" value="0">
+            </div>
+
+            <div class="field">
+                <label>Extra Person Charge</label>
+                <input id="extraCharge" type="number" min="0" value="0">
+            </div>
+
+            <div class="field">
+                <label>Room Rate / Night</label>
+                <input id="checkinRate" type="number">
+            </div>
+
+            <div class="field">
+                <label>Advance Payment</label>
+                <input id="advance" type="number" min="0" value="0">
+            </div>
+
+            <div class="field">
+                <label>Payment Mode</label>
+                <select id="advanceMode">
+                    <option>Cash</option>
+                    <option>UPI</option>
+                    <option>Card</option>
+                    <option>Other</option>
+                </select>
+            </div>
+
+            <div class="field">
+                <label>Discount</label>
+                <input id="discount" type="number" min="0" value="0">
+            </div>
+
+            <div class="field">
+                <label>Reference / Referred By</label>
+                <input id="reference">
+            </div>
+
+            <div class="field">
+                <label>Reference Mobile</label>
+                <input id="referenceMobile">
+            </div>
+
+            <div class="field">
+                <label>Booking Source</label>
+                <select id="bookingSource">
+                    <option>Walk-in</option>
+                    <option>Phone</option>
+                    <option>Online</option>
+                    <option>Travel Agent</option>
+                    <option>Other</option>
+                </select>
+            </div>
+
+            <div class="field full">
+                <label>Remarks</label>
+                <textarea id="remarks"></textarea>
+            </div>
+        </div>
+
+        <div class="panel" style="background:#f8fafc">
+            <strong>Estimated Bill:</strong>
+            <span id="estimatedBill">₹0</span>
+        </div>
+
+        <button class="btn green" onclick="saveCheckin()">Save Check-in</button>
+    </div>
+</section>
+
+<!-- GUESTS -->
+<section id="guests" class="page">
+    <h1>Guests</h1>
+
+    <div class="panel">
+        <div class="field">
+            <label>Search Guest</label>
+            <input id="guestSearch" oninput="renderGuests()"
+                   placeholder="Name / Mobile / ID">
+        </div>
+    </div>
+
+    <div class="panel table-wrap">
+        <table>
+            <thead>
+                <tr>
+                    <th>Name</th>
+                    <th>Mobile</th>
+                    <th>Room</th>
+                    <th>Check-in</th>
+                    <th>Check-out</th>
+                    <th>Status</th>
+                    <th>Action</th>
+                </tr>
+            </thead>
+            <tbody id="guestTable"></tbody>
+        </table>
+    </div>
+</section>
+
+<!-- CHECKOUT -->
+<section id="checkout" class="page">
+    <h1>Check-out</h1>
+
+    <div class="panel">
+        <div class="field">
+            <label>Select Active Guest</label>
+            <select id="checkoutGuest" onchange="loadCheckout()"></select>
+        </div>
+    </div>
+
+    <div id="checkoutBox"></div>
+</section>
+
+<!-- BILLS -->
+<section id="bills" class="page">
+    <h1>Bills</h1>
+
+    <div class="panel">
+        <div class="field">
+            <label>Search Bill / Guest / Mobile</label>
+            <input id="billSearch" oninput="renderBills()">
+        </div>
+    </div>
+
+    <div class="panel table-wrap">
+        <table>
+            <thead>
+                <tr>
+                    <th>Bill No</th>
+                    <th>Guest</th>
+                    <th>Room</th>
+                    <th>Check-in</th>
+                    <th>Check-out</th>
+                    <th>Total</th>
+                    <th>Paid</th>
+                    <th>Balance</th>
+                    <th>Status</th>
+                    <th>Action</th>
+                </tr>
+            </thead>
+            <tbody id="billTable"></tbody>
+        </table>
+    </div>
+</section>
+
+<!-- BILL SETTLEMENT -->
+<section id="settlement" class="page">
+    <h1>💰 Bill Settlement</h1>
+
+    <div id="settlementMsg" class="alert"></div>
+
+    <div class="panel">
+        <h2>Pending Bills</h2>
+
+        <div class="field">
+            <label>Search Pending Bill</label>
+            <input id="settlementSearch"
+                   oninput="renderSettlementBills()"
+                   placeholder="Bill No / Guest / Mobile">
+        </div>
+
+        <div class="table-wrap">
+            <table>
+                <thead>
+                    <tr>
+                        <th>Bill No</th>
+                        <th>Guest</th>
+                        <th>Room</th>
+                        <th>Total</th>
+                        <th>Paid</th>
+                        <th>Pending</th>
+                        <th>Action</th>
+                    </tr>
+                </thead>
+                <tbody id="settlementTable"></tbody>
+            </table>
+        </div>
+    </div>
+
+    <div class="panel" id="settlementForm" style="display:none">
+        <h2>Settlement Payment</h2>
+
+        <div id="selectedBillInfo"></div>
+
+        <div class="grid">
+            <div class="field">
+                <label>Settlement Amount</label>
+                <input id="settlementAmount" type="number">
+            </div>
+
+            <div class="field">
+                <label>Payment Mode</label>
+                <select id="settlementMode">
+                    <option>Cash</option>
+                    <option>UPI</option>
+                    <option>Card</option>
+                    <option>Other</option>
+                </select>
+            </div>
+
+            <div class="field">
+                <label>Settlement Date</label>
+                <input id="settlementDate" type="date">
+            </div>
+
+            <div class="field">
+                <label>Remarks</label>
+                <input id="settlementRemarks">
+            </div>
+        </div>
+
+        <button class="btn green" onclick="settleBill()">
+            SETTLE PAYMENT
+        </button>
+
+        <button class="btn gray" onclick="closeSettlementForm()">
+            Cancel
+        </button>
+    </div>
+
+    <div class="panel">
+        <h2>Settlement / Payment History</h2>
+
+        <div class="table-wrap">
+            <table>
+                <thead>
+                    <tr>
+                        <th>Date</th>
+                        <th>Bill No</th>
+                        <th>Guest</th>
+                        <th>Amount</th>
+                        <th>Mode</th>
+                        <th>Remarks</th>
+                    </tr>
+                </thead>
+                <tbody id="settlementHistory"></tbody>
+            </table>
+        </div>
+    </div>
+</section>
+
+<!-- DAILY REPORT -->
+<section id="daily" class="page">
+    <h1>Daily Report</h1>
+
+    <div class="panel">
+        <div class="report-filter">
+            <div class="field">
+                <label>Select Date</label>
+                <input id="dailyDate" type="date" onchange="generateDailyReport()">
+            </div>
+            <button class="btn" onclick="printDaily()">Print</button>
+        </div>
+    </div>
+
+    <div class="cards">
+        <div class="card">
+            <div class="card-title">Check-ins</div>
+            <div class="card-value" id="dailyCheckins">0</div>
+        </div>
+        <div class="card">
+            <div class="card-title">Check-outs</div>
+            <div class="card-value" id="dailyCheckouts">0</div>
+        </div>
+        <div class="card">
+            <div class="card-title">Total Sales</div>
+            <div class="card-value" id="dailySales">₹0</div>
+        </div>
+        <div class="card">
+            <div class="card-title">Collection</div>
+            <div class="card-value" id="dailyPaid">₹0</div>
+        </div>
+        <div class="card">
+            <div class="card-title">Pending</div>
+            <div class="card-value" id="dailyPending">₹0</div>
+        </div>
+    </div>
+
+    <div class="panel table-wrap">
+        <table>
+            <thead>
+                <tr>
+                    <th>Bill</th>
+                    <th>Guest</th>
+                    <th>Room</th>
+                    <th>Amount</th>
+                    <th>Paid</th>
+                    <th>Balance</th>
+                    <th>Mode</th>
+                </tr>
+            </thead>
+            <tbody id="dailyTable"></tbody>
+        </table>
+    </div>
+</section>
+
+<!-- MONTHLY SALES -->
+<section id="monthly" class="page">
+    <h1>📈 Monthly Sales Report</h1>
+
+    <div class="panel">
+        <div class="report-filter">
+            <div class="field">
+                <label>Select Month</label>
+                <input id="monthlyMonth" type="month" onchange="generateMonthlyReport()">
+            </div>
+
+            <button class="btn" onclick="generateMonthlyReport()">Generate Report</button>
+            <button class="btn gray" onclick="printMonthly()">Print</button>
+        </div>
+    </div>
+
+    <div class="cards">
+        <div class="card">
+            <div class="card-title">Total Bills</div>
+            <div class="card-value" id="monthBills">0</div>
+        </div>
+
+        <div class="card">
+            <div class="card-title">Total Guests</div>
+            <div class="card-value" id="monthGuests">0</div>
+        </div>
+
+        <div class="card">
+            <div class="card-title">Total Nights</div>
+            <div class="card-value" id="monthNights">0</div>
+        </div>
+
+        <div class="card">
+            <div class="card-title">Total Sales</div>
+            <div class="card-value" id="monthSales">₹0</div>
+        </div>
+
+        <div class="card">
+            <div class="card-title">Total Paid</div>
+            <div class="card-value" id="monthPaid">₹0</div>
+        </div>
+
+        <div class="card">
+            <div class="card-title">Total Pending</div>
+            <div class="card-value" id="monthPending">₹0</div>
+        </div>
+    </div>
+
+    <div class="cards">
+        <div class="card">
+            <div class="card-title">Cash Collection</div>
+            <div class="card-value" id="monthCash">₹0</div>
+        </div>
+
+        <div class="card">
+            <div class="card-title">UPI Collection</div>
+            <div class="card-value" id="monthUPI">₹0</div>
+        </div>
+
+        <div class="card">
+            <div class="card-title">Card Collection</div>
+            <div class="card-value" id="monthCard">₹0</div>
+        </div>
+
+        <div class="card">
+            <div class="card-title">Other Collection</div>
+            <div class="card-value" id="monthOther">₹0</div>
+        </div>
+    </div>
+
+    <div class="panel">
+        <h2>Detailed Monthly Bill Report</h2>
+
+        <div class="table-wrap">
+            <table>
+                <thead>
+                    <tr>
+                        <th>Bill No</th>
+                        <th>Guest Name</th>
+                        <th>Room</th>
+                        <th>Check-in Date</th>
+                        <th>Check-out Date</th>
+                        <th>Amount</th>
+                        <th>Paid</th>
+                        <th>Balance</th>
+                        <th>Payment Mode</th>
+                        <th>Status</th>
+                    </tr>
+                </thead>
+
+                <tbody id="monthlyTable"></tbody>
+            </table>
+        </div>
+    </div>
+
+    <div class="panel">
+        <h2>Day-by-Day Sales Summary</h2>
+
+        <div class="table-wrap">
+            <table>
+                <thead>
+                    <tr>
+                        <th>Date</th>
+                        <th>Bills</th>
+                        <th>Sales</th>
+                        <th>Paid</th>
+                        <th>Pending</th>
+                    </tr>
+                </thead>
+                <tbody id="monthlyDayTable"></tbody>
+            </table>
+        </div>
+    </div>
+</section>
+
+<!-- BACKUP -->
+<section id="backup" class="page">
+    <h1>Backup & Restore</h1>
+
+    <div class="panel">
+        <h2>Backup</h2>
+        <p>Guest, rooms, bills, payments and settings will be exported.</p>
+        <button class="btn green" onclick="exportBackup()">Export Backup</button>
+    </div>
+
+    <div class="panel">
+        <h2>Restore</h2>
+        <input type="file" id="restoreFile" accept=".json">
+        <br><br>
+        <button class="btn orange" onclick="restoreBackup()">Restore Backup</button>
+    </div>
+</section>
+
+<!-- SETTINGS -->
+<section id="settings" class="page">
+    <h1>Settings</h1>
+
+    <div class="panel">
+        <h2>Hotel Profile</h2>
+
+        <div class="grid">
+            <div class="field">
+                <label>Hotel Name</label>
+                <input id="settingHotelName">
+            </div>
+
+            <div class="field">
+                <label>Mobile</label>
+                <input id="settingMobile">
+            </div>
+
+            <div class="field">
+                <label>Email</label>
+                <input id="settingEmail">
+            </div>
+
+            <div class="field">
+                <label>GST Number</label>
+                <input id="settingGST">
+            </div>
+
+            <div class="field full">
+                <label>Address</label>
+                <textarea id="settingAddress"></textarea>
+            </div>
+        </div>
+
+        <button class="btn green" onclick="saveSettings()">Save Settings</button>
+    </div>
+
+    <div class="panel">
+        <h2>License</h2>
+        <p><strong>Hotel ID:</strong> <span id="showHotelId"></span></p>
+        <p><strong>Status:</strong> <span class="settled">ACTIVE</span></p>
+        <p><strong>Prototype:</strong> Yes</p>
+    </div>
+</section>
+
+<!-- BILL PRINT PAGE -->
+<section id="billPrintPage" class="page">
+    <div id="billPrintContent"></div>
+</section>
+
+</main>
+</div>
+
+<!-- BILL MODAL -->
+<div class="modal" id="billModal">
+    <div class="modal-box">
+        <div id="billModalContent"></div>
+        <br>
+        <button class="btn" onclick="window.print()">Print</button>
+        <button class="btn gray" onclick="closeModal()">Close</button>
+    </div>
+</div>
+
+<script>
+
+/* =========================
+   DATABASE
+========================= */
+
+const DB_KEY = "stayDeskBasicDB";
+
+/* =====================================================
+   LICENSE SERVER
+   Only license-control data goes to Google Sheet.
+   Guests, IDs, rooms, bills and hotel operations remain local.
+===================================================== */
+const GOOGLE_SCRIPT_URL = "https://script.google.com/macros/s/AKfycbzo25_FOzZpiPn2bFOlR8q9ophJEv8oiXNfEJZeF4KZH51KdvfOlC_u2-pqG4pMYHsF/exec";
+const DEVICE_KEY = "stayDeskDeviceId";
+let licenseServerVerified = false;
+
+function getDeviceId(){
+    let id = localStorage.getItem(DEVICE_KEY);
+    if(!id){
+        id = "SD-" + (crypto && crypto.randomUUID ? crypto.randomUUID() : Date.now()+"-"+Math.random().toString(36).slice(2));
+        localStorage.setItem(DEVICE_KEY,id);
+    }
+    return id;
+}
+
+function verifyLicenseWithServer(hotelId, license){
+    return new Promise((resolve)=>{
+        const cb = "stayDeskVerifyCB_" + Date.now();
+        const script = document.createElement("script");
+        let finished = false;
+
+        const done = (result)=>{
+            if(finished) return;
+            finished = true;
+            try{ delete window[cb]; }catch(e){}
+            if(script.parentNode) script.parentNode.removeChild(script);
+            resolve(result || {success:false, message:"No server response"});
+        };
+
+        const timer = setTimeout(()=>done({success:false,message:"License server timeout. Check internet and try again."}),12000);
+
+        window[cb] = function(data){
+            clearTimeout(timer);
+            done(data);
+        };
+
+        const params = new URLSearchParams({
+            action:"verify",
+            hotelId:hotelId,
+            activationKey:license,
+            license:license,
+            deviceId:getDeviceId(),
+            callback:cb,
+            _:String(Date.now())
+        });
+
+        script.src = GOOGLE_SCRIPT_URL + "?" + params.toString();
+        script.onerror = ()=>{
+            clearTimeout(timer);
+            done({success:false,message:"Unable to contact license server."});
+        };
+        document.head.appendChild(script);
+    });
+}
+
+
+let db = JSON.parse(localStorage.getItem(DB_KEY)) || {
+    rooms: [],
+    guests: [],
+    bills: [],
+    payments: [],
+    settings: {
+        hotelName:"My Hotel",
+        mobile:"",
+        email:"",
+        gst:"",
+        address:""
+    },
+    hotelId:"",
+    license:""
+};
+
+let selectedSettlementBillId = null;
+
+
+/* =========================
+   BASIC FUNCTIONS
+========================= */
+
+function saveDB(){
+    localStorage.setItem(DB_KEY, JSON.stringify(db));
+    refreshAll();
+}
+
+function money(n){
+    return "₹" + Number(n || 0).toLocaleString("en-IN");
+}
+
+function today(){
+    return new Date().toISOString().split("T")[0];
+}
+
+function showMessage(id,text,type="success"){
+    const el=document.getElementById(id);
+    if(!el)return;
+    el.className="alert show "+type;
+    el.innerText=text;
+
+    setTimeout(()=>{
+        el.className="alert";
+    },3000);
+}
+
+async function activateDemo(){
+
+    const hotelId=document.getElementById("loginHotelId").value.trim();
+    const license=document.getElementById("loginLicense").value.trim();
+
+    if(!hotelId || !license){
+        showMessage("loginMsg","Hotel ID and License Key required","error");
+        return;
+    }
+
+    const btn=document.querySelector('#loginScreen button.btn');
+    if(btn){ btn.disabled=true; btn.innerText="Verifying License..."; }
+
+    const result = await verifyLicenseWithServer(hotelId,license);
+
+    if(!result || result.success !== true){
+        const msg = (result && (result.message || result.error)) ||
+                    "License verification failed. Check Hotel ID, License Key and internet.";
+        showMessage("loginMsg",msg,"error");
+        if(btn){ btn.disabled=false; btn.innerText="Activate & Login"; }
+        return;
+    }
+
+    /* Only license metadata is stored locally.
+       Operational data remains in this browser/device. */
+    db.hotelId=hotelId;
+    db.license=license;
+
+    if(result.hotel){
+        db.settings = db.settings || {};
+        if(result.hotel.hotelName) db.settings.hotelName=result.hotel.hotelName;
+        if(result.hotel.mobile) db.settings.mobile=result.hotel.mobile;
+        if(result.hotel.email) db.settings.email=result.hotel.email;
+        if(result.hotel.gst) db.settings.gst=result.hotel.gst;
+        if(result.hotel.address) db.settings.address=result.hotel.address;
+    }
+
+    db.licenseVerifiedAt = new Date().toISOString();
+    db.licenseExpiry = result.expiryDate || (result.hotel && result.hotel.expiryDate) || "";
+    db.licenseStatus = result.status || (result.hotel && result.hotel.status) || "Active";
+
+    saveDB();
+
+    licenseServerVerified = true;
+    document.getElementById("loginScreen").style.display="none";
+    document.getElementById("app").style.display="block";
+
+    refreshAll();
+
+    if(btn){ btn.disabled=false; btn.innerText="Activate & Login"; }
+}
+
+
+function logout(){
+    document.getElementById("app").style.display="none";
+    document.getElementById("loginScreen").style.display="flex";
+}
+
+
+/* =========================
+   NAVIGATION
+========================= */
+
+function showPage(page,btn){
+
+    document.querySelectorAll(".page").forEach(p=>{
+        p.classList.remove("active");
+    });
+
+    const target=document.getElementById(page);
+    if(target)target.classList.add("active");
+
+    document.querySelectorAll(".menu-btn").forEach(b=>{
+        b.classList.remove("active");
+    });
+
+    if(btn)btn.classList.add("active");
+
+    if(page==="monthly")generateMonthlyReport();
+    if(page==="daily")generateDailyReport();
+    if(page==="settlement"){
+        renderSettlementBills();
+        renderSettlementHistory();
+    }
+}
+
+
+/* =========================
+   ROOMS
+========================= */
+
+function addRoom(){
+
+    const no=document.getElementById("roomNo").value.trim();
+    const type=document.getElementById("roomType").value;
+    const rate=Number(document.getElementById("roomRate").value || 0);
+
+    if(!no){
+        alert("Room number required");
+        return;
+    }
+
+    if(db.rooms.some(r=>r.no===no)){
+        alert("Room already exists");
+        return;
+    }
+
+    db.rooms.push({
+        id:Date.now(),
+        no,
+        type,
+        rate,
+        status:"Available"
+    });
+
+    document.getElementById("roomNo").value="";
+    document.getElementById("roomRate").value="";
+
+    saveDB();
+}
+
+function renderRooms(){
+
+    const grid=document.getElementById("roomGrid");
+    grid.innerHTML="";
+
+    db.rooms.forEach(room=>{
+
+        const div=document.createElement("div");
+        div.className="room "+room.status.toLowerCase();
+
+        div.innerHTML=`
+            <h2>Room ${room.no}</h2>
+            <p>${room.type}</p>
+            <strong>${money(room.rate)}/night</strong>
+            <p>
+                <span class="status ${room.status.toLowerCase()}">
+                    ${room.status}
+                </span>
+            </p>
+
+            <select onchange="changeRoomStatus(${room.id},this.value)">
+                <option ${room.status==="Available"?"selected":""}>Available</option>
+                <option ${room.status==="Occupied"?"selected":""}>Occupied</option>
+                <option ${room.status==="Cleaning"?"selected":""}>Cleaning</option>
+                <option ${room.status==="Maintenance"?"selected":""}>Maintenance</option>
+            </select>
+        `;
+
+        grid.appendChild(div);
+    });
+
+    const select=document.getElementById("checkinRoom");
+
+    if(select){
+        select.innerHTML='<option value="">Select Room</option>';
+
+        db.rooms.filter(r=>r.status==="Available").forEach(r=>{
+            select.innerHTML+=`
+                <option value="${r.id}">
+                    Room ${r.no} - ${r.type} - ${money(r.rate)}
+                </option>
+            `;
+        });
+    }
+}
+
+function changeRoomStatus(id,status){
+
+    const room=db.rooms.find(r=>r.id==id);
+
+    if(room){
+        room.status=status;
+        saveDB();
+    }
+}
+
+
+/* =========================
+   CHECK-IN
+========================= */
+
+document.getElementById("checkinDate").value=today();
+document.getElementById("checkinTime").value=
+    new Date().toTimeString().slice(0,5);
+
+document.getElementById("settlementDate").value=today();
+
+document.getElementById("checkinRoom").addEventListener("change",function(){
+
+    const room=db.rooms.find(r=>r.id==this.value);
+
+    if(room){
+
+        document.getElementById("checkinRoomType").value=room.type;
+        document.getElementById("checkinRate").value=room.rate;
+
+    }else{
+
+        document.getElementById("checkinRoomType").value="";
+    }
+
+    calculateEstimatedBill();
+});
+
+["nights","checkinRate","extraCharge","discount"].forEach(id=>{
+    document.getElementById(id).addEventListener("input",calculateEstimatedBill);
+});
+
+function calculateEstimatedBill(){
+
+    const nights=Number(document.getElementById("nights").value || 1);
+    const rate=Number(document.getElementById("checkinRate").value || 0);
+    const extra=Number(document.getElementById("extraCharge").value || 0);
+    const discount=Number(document.getElementById("discount").value || 0);
+
+    const total=(nights*rate)+extra-discount;
+
+    document.getElementById("estimatedBill").innerText=money(Math.max(total,0));
+}
+
+function saveCheckin(){
+
+    const name=document.getElementById("guestName").value.trim();
+    const mobile=document.getElementById("guestMobile").value.trim();
+    const address=document.getElementById("guestAddress").value.trim();
+    const idNumber=document.getElementById("idNumber").value.trim();
+    const roomId=document.getElementById("checkinRoom").value;
+
+    if(!name || !mobile || !address || !idNumber || !roomId){
+
+        showMessage(
+            "checkinMsg",
+            "Please fill all required fields",
+            "error"
+        );
+
+        return;
+    }
+
+    const room=db.rooms.find(r=>r.id==roomId);
+
+    const nights=Number(document.getElementById("nights").value || 1);
+    const rate=Number(document.getElementById("checkinRate").value || 0);
+    const extra=Number(document.getElementById("extraCharge").value || 0);
+    const discount=Number(document.getElementById("discount").value || 0);
+    const advance=Number(document.getElementById("advance").value || 0);
+
+    const total=Math.max(
+        (nights*rate)+extra-discount,
+        0
+    );
+
+    const guestId=Date.now();
+
+    const guest={
+        id:guestId,
+        name,
+        mobile,
+        email:document.getElementById("guestEmail").value,
+        address,
+        city:document.getElementById("guestCity").value,
+        state:document.getElementById("guestState").value,
+        country:document.getElementById("guestCountry").value,
+        nationality:document.getElementById("guestNationality").value,
+        idType:document.getElementById("idType").value,
+        idNumber,
+        roomId,
+        room:room.no,
+        roomType:room.type,
+        checkin:document.getElementById("checkinDate").value,
+        checkinTime:document.getElementById("checkinTime").value,
+        checkout:document.getElementById("checkoutDate").value,
+        nights,
+        adults:Number(document.getElementById("adults").value || 1),
+        kids:Number(document.getElementById("kids").value || 0),
+        extraPerson:Number(document.getElementById("extraPerson").value || 0),
+        rate,
+        extraCharge:extra,
+        discount,
+        advance,
+        advanceMode:document.getElementById("advanceMode").value,
+        reference:document.getElementById("reference").value,
+        referenceMobile:document.getElementById("referenceMobile").value,
+        bookingSource:document.getElementById("bookingSource").value,
+        remarks:document.getElementById("remarks").value,
+        status:"Checked-in"
+    };
+
+    db.guests.push(guest);
+
+    const billNo="B-"+String(db.bills.length+1001);
+
+    const bill={
+        id:Date.now()+1,
+        invoice:billNo,
+        guestId,
+        guest:name,
+        mobile,
+        room:room.no,
+
+        checkin:guest.checkin,
+        checkout:guest.checkout,
+
+        nights,
+        roomCharges:nights*rate,
+        extraCharges:extra,
+        discount,
+        total,
+
+        paid:advance,
+        balance:Math.max(total-advance,0),
+
+        paymentMode:document.getElementById("advanceMode").value,
+
+        status:advance>=total ? "SETTLED":"PENDING",
+
+        payments: advance>0 ? [{
+            id:Date.now()+2,
+            date:guest.checkin,
+            amount:advance,
+            mode:guest.advanceMode,
+            type:"Advance",
+            remarks:"Check-in advance"
+        }] : []
+    };
+
+    db.bills.push(bill);
+
+    if(advance>0){
+
+        db.payments.push({
+            id:Date.now()+3,
+            billId:bill.id,
+            invoice:bill.invoice,
+            guest:name,
+            date:guest.checkin,
+            amount:advance,
+            mode:guest.advanceMode,
+            type:"Advance",
+            remarks:"Check-in advance"
+        });
+    }
+
+    room.status="Occupied";
+
+    saveDB();
+
+    showMessage(
+        "checkinMsg",
+        "Check-in saved successfully. Bill "+billNo,
+        "success"
+    );
+
+    clearCheckinForm();
+}
+
+function clearCheckinForm(){
+
+    [
+        "guestName",
+        "guestMobile",
+        "guestEmail",
+        "guestAddress",
+        "guestCity",
+        "guestState",
+        "idNumber",
+        "reference",
+        "referenceMobile",
+        "remarks"
+    ].forEach(id=>{
+        document.getElementById(id).value="";
+    });
+
+    document.getElementById("advance").value=0;
+    document.getElementById("discount").value=0;
+    document.getElementById("extraCharge").value=0;
+    document.getElementById("extraPerson").value=0;
+    document.getElementById("nights").value=1;
+}
+
+
+/* =========================
+   GUESTS
+========================= */
+
+function renderGuests(){
+
+    const tbody=document.getElementById("guestTable");
+    tbody.innerHTML="";
+
+    const search=(document.getElementById("guestSearch").value || "")
+        .toLowerCase();
+
+    db.guests
+        .filter(g=>
+            g.name.toLowerCase().includes(search) ||
+            g.mobile.includes(search) ||
+            g.idNumber.toLowerCase().includes(search)
+        )
+        .forEach(g=>{
+
+            tbody.innerHTML+=`
+                <tr>
+                    <td>${g.name}</td>
+                    <td>${g.mobile}</td>
+                    <td>${g.room}</td>
+                    <td>${g.checkin}</td>
+                    <td>${g.checkout || "-"}</td>
+                    <td>${g.status}</td>
+                    <td>
+                        <button class="btn small"
+                        onclick="viewGuest(${g.id})">
+                        View
+                        </button>
+                    </td>
+                </tr>
+            `;
+        });
+}
+
+function viewGuest(id){
+
+    const g=db.guests.find(x=>x.id==id);
+    if(!g)return;
+
+    const bills=db.bills.filter(b=>b.guestId==id);
+
+    let html=`
+        <h2>${g.name}</h2>
+        <p><strong>Mobile:</strong> ${g.mobile}</p>
+        <p><strong>ID:</strong> ${g.idType} - ${g.idNumber}</p>
+        <p><strong>Room:</strong> ${g.room}</p>
+        <p><strong>Stay:</strong> ${g.checkin} → ${g.checkout || "Current"}</p>
+        <hr>
+        <h3>Previous Bills</h3>
+    `;
+
+    bills.forEach(b=>{
+        html+=`
+            <p>
+                ${b.invoice} -
+                ${money(b.total)} -
+                ${b.status}
+                <button class="btn small"
+                    onclick="viewBill(${b.id})">
+                    View
+                </button>
+            </p>
+        `;
+    });
+
+    openModal(html);
+}
+
+
+/* =========================
+   CHECKOUT
+========================= */
+
+function renderCheckoutGuests(){
+
+    const select=document.getElementById("checkoutGuest");
+
+    select.innerHTML='<option value="">Select Guest</option>';
+
+    db.guests
+        .filter(g=>g.status==="Checked-in")
+        .forEach(g=>{
+            select.innerHTML+=`
+                <option value="${g.id}">
+                    ${g.name} - Room ${g.room}
+                </option>
+            `;
+        });
+}
+
+function loadCheckout(){
+
+    const id=document.getElementById("checkoutGuest").value;
+    const box=document.getElementById("checkoutBox");
+
+    if(!id){
+        box.innerHTML="";
+        return;
+    }
+
+    const g=db.guests.find(x=>x.id==id);
+    const bill=db.bills.find(x=>x.guestId==id && x.status!=="CLOSED");
+
+    if(!g || !bill)return;
+
+    box.innerHTML=`
+        <div class="panel">
+
+            <h2>${g.name} - Room ${g.room}</h2>
+
+            <p>Check-in: ${g.checkin}</p>
+            <p>Expected Check-out: ${g.checkout || "-"}</p>
+
+            <div class="field">
+                <label>Actual Check-out Date</label>
+                <input id="actualCheckout" type="date" value="${today()}">
+            </div>
+
+            <div class="field">
+                <label>Other Charges</label>
+                <input id="checkoutOther" type="number" value="0">
+            </div>
+
+            <div class="field">
+                <label>Checkout Payment</label>
+                <input id="checkoutPayment" type="number" value="${bill.balance}">
+            </div>
+
+            <div class="field">
+                <label>Payment Mode</label>
+                <select id="checkoutMode">
+                    <option>Cash</option>
+                    <option>UPI</option>
+                    <option>Card</option>
+                    <option>Other</option>
+                </select>
+            </div>
+
+            <div class="panel" style="background:#f8fafc">
+                <p>Current Bill: ${money(bill.total)}</p>
+                <p>Already Paid: ${money(bill.paid)}</p>
+                <p>Current Pending: ${money(bill.balance)}</p>
+            </div>
+
+            <button class="btn green"
+                onclick="completeCheckout(${g.id},${bill.id})">
+                Complete Check-out
+            </button>
+        </div>
+    `;
+}
+
+function completeCheckout(guestId,billId){
+
+    const g=db.guests.find(x=>x.id==guestId);
+    const bill=db.bills.find(x=>x.id==billId);
+
+    if(!g || !bill)return;
+
+    const other=Number(
+        document.getElementById("checkoutOther").value || 0
+    );
+
+    const payment=Number(
+        document.getElementById("checkoutPayment").value || 0
+    );
+
+    const mode=document.getElementById("checkoutMode").value;
+    const checkoutDate=document.getElementById("actualCheckout").value;
+
+    bill.otherCharges=(bill.otherCharges || 0)+other;
+    bill.total=bill.total+other;
+
+    if(payment>0){
+
+        bill.paid+=payment;
+        bill.balance=Math.max(bill.total-bill.paid,0);
+
+        const pay={
+            id:Date.now(),
+            billId:bill.id,
+            invoice:bill.invoice,
+            guest:g.name,
+            date:checkoutDate,
+            amount:payment,
+            mode,
+            type:"Checkout Payment",
+            remarks:"Payment at checkout"
+        };
+
+        bill.payments.push(pay);
+        db.payments.push(pay);
+    }
+
+    g.checkout=checkoutDate;
+    g.status="Checked-out";
+
+    const room=db.rooms.find(r=>r.id==g.roomId);
+
+    if(room)room.status="Available";
+
+    bill.checkout=checkoutDate;
+
+    if(bill.balance===0){
+        bill.status="SETTLED";
+    }
+
+    saveDB();
+
+    alert("Check-out completed");
+
+    document.getElementById("checkoutBox").innerHTML="";
+}
+
+
+/* =========================
+   BILLS
+========================= */
+
+function renderBills(){
+
+    const tbody=document.getElementById("billTable");
+    tbody.innerHTML="";
+
+    const search=(document.getElementById("billSearch").value || "")
+        .toLowerCase();
+
+    db.bills
+        .filter(b=>
+            b.invoice.toLowerCase().includes(search) ||
+            b.guest.toLowerCase().includes(search) ||
+            b.mobile.includes(search)
+        )
+        .forEach(b=>{
+
+            tbody.innerHTML+=`
+                <tr>
+                    <td>${b.invoice}</td>
+                    <td>${b.guest}</td>
+                    <td>${b.room}</td>
+                    <td>${b.checkin || "-"}</td>
+                    <td>${b.checkout || "-"}</td>
+                    <td>${money(b.total)}</td>
+                    <td>${money(b.paid)}</td>
+                    <td class="${b.balance>0?"pending":""}">
+                        ${money(b.balance)}
+                    </td>
+                    <td class="${b.balance>0?"pending":"settled"}">
+                        ${b.balance>0?"PENDING":"SETTLED"}
+                    </td>
+                    <td>
+                        <button class="btn small"
+                            onclick="viewBill(${b.id})">
+                            View
+                        </button>
+
+                        ${b.balance>0 ? `
+                        <button class="btn green small"
+                            onclick="selectSettlement(${b.id})">
+                            Settle
+                        </button>` : ""}
+                    </td>
+                </tr>
+            `;
+        });
+}
+
+function viewBill(id){
+
+    const b=db.bills.find(x=>x.id==id);
+    if(!b)return;
+
+    const hotel=db.settings;
+
+    let payments="";
+
+    (b.payments || []).forEach(p=>{
+        payments+=`
+            <tr>
+                <td>${p.date}</td>
+                <td>${p.type}</td>
+                <td>${money(p.amount)}</td>
+                <td>${p.mode}</td>
+                <td>${p.remarks || ""}</td>
+            </tr>
+        `;
+    });
+
+    const html=`
+        <div class="bill-preview">
+
+            <div class="bill-head">
+                <h1>${hotel.hotelName || "My Hotel"}</h1>
+                <p>${hotel.address || ""}</p>
+                <p>${hotel.mobile || ""}</p>
+                ${hotel.gst ? `<p>GST: ${hotel.gst}</p>` : ""}
+                <h2>INVOICE</h2>
+                <strong>${b.invoice}</strong>
+            </div>
+
+            <p><strong>Guest:</strong> ${b.guest}</p>
+            <p><strong>Mobile:</strong> ${b.mobile}</p>
+            <p><strong>Room:</strong> ${b.room}</p>
+            <p><strong>Check-in:</strong> ${b.checkin || "-"}</p>
+            <p><strong>Check-out:</strong> ${b.checkout || "-"}</p>
+
+            <hr>
+
+            <div class="total-box">
+                <span>Room Charges</span>
+                <strong>${money(b.roomCharges)}</strong>
+            </div>
+
+            <div class="total-box">
+                <span>Extra Charges</span>
+                <strong>${money(b.extraCharges)}</strong>
+            </div>
+
+            <div class="total-box">
+                <span>Other Charges</span>
+                <strong>${money(b.otherCharges || 0)}</strong>
+            </div>
+
+            <div class="total-box">
+                <span>Discount</span>
+                <strong>- ${money(b.discount)}</strong>
+            </div>
+
+            <div class="total-box grand-total">
+                <span>Total</span>
+                <strong>${money(b.total)}</strong>
+            </div>
+
+            <div class="total-box">
+                <span>Paid</span>
+                <strong>${money(b.paid)}</strong>
+            </div>
+
+            <div class="total-box">
+                <span>Balance</span>
+                <strong>${money(b.balance)}</strong>
+            </div>
+
+            <hr>
+
+            <h3>Payment History</h3>
+
+            <table>
+                <thead>
+                    <tr>
+                        <th>Date</th>
+                        <th>Type</th>
+                        <th>Amount</th>
+                        <th>Mode</th>
+                        <th>Remarks</th>
+                    </tr>
+                </thead>
+                <tbody>${payments}</tbody>
+            </table>
+
+            <br><br>
+            <p>Authorized Signature: __________________</p>
+            <p>Hotel Stamp: __________________</p>
+
+        </div>
+    `;
+
+    openModal(html);
+}
+
+
+/* =========================
+   BILL SETTLEMENT
+========================= */
+
+function renderSettlementBills(){
+
+    const tbody=document.getElementById("settlementTable");
+    tbody.innerHTML="";
+
+    const search=(document.getElementById("settlementSearch").value || "")
+        .toLowerCase();
+
+    db.bills
+        .filter(b=>
+            b.balance>0 &&
+            (
+                b.invoice.toLowerCase().includes(search) ||
+                b.guest.toLowerCase().includes(search) ||
+                b.mobile.includes(search)
+            )
+        )
+        .forEach(b=>{
+
+            tbody.innerHTML+=`
+                <tr>
+                    <td>${b.invoice}</td>
+                    <td>${b.guest}</td>
+                    <td>${b.room}</td>
+                    <td>${money(b.total)}</td>
+                    <td>${money(b.paid)}</td>
+                    <td class="pending">${money(b.balance)}</td>
+                    <td>
+                        <button class="btn green small"
+                            onclick="selectSettlement(${b.id})">
+                            Collect Payment
+                        </button>
+                    </td>
+                </tr>
+            `;
+        });
+}
+
+function selectSettlement(id){
+
+    const b=db.bills.find(x=>x.id==id);
+
+    if(!b || b.balance<=0)return;
+
+    selectedSettlementBillId=id;
+
+    document.getElementById("settlementForm").style.display="block";
+
+    document.getElementById("settlementAmount").value=b.balance;
+
+    document.getElementById("settlementDate").value=today();
+
+    document.getElementById("selectedBillInfo").innerHTML=`
+        <div class="panel" style="background:#f8fafc">
+
+            <h3>${b.invoice} - ${b.guest}</h3>
+
+            <p>Room: <strong>${b.room}</strong></p>
+
+            <p>Total Amount:
+                <strong>${money(b.total)}</strong>
+            </p>
+
+            <p>Already Paid:
+                <strong>${money(b.paid)}</strong>
+            </p>
+
+            <p style="color:#dc2626;font-size:20px">
+                Pending:
+                <strong>${money(b.balance)}</strong>
+            </p>
+
+        </div>
+    `;
+
+    document.getElementById("settlementForm")
+        .scrollIntoView({behavior:"smooth"});
+}
+
+function closeSettlementForm(){
+
+    selectedSettlementBillId=null;
+
+    document.getElementById("settlementForm").style.display="none";
+}
+
+function settleBill(){
+
+    if(!selectedSettlementBillId)return;
+
+    const b=db.bills.find(x=>x.id==selectedSettlementBillId);
+
+    if(!b)return;
+
+    const amount=Number(
+        document.getElementById("settlementAmount").value || 0
+    );
+
+    const mode=document.getElementById("settlementMode").value;
+
+    const date=document.getElementById("settlementDate").value;
+
+    const remarks=document.getElementById("settlementRemarks").value;
+
+    if(amount<=0){
+        showMessage(
+            "settlementMsg",
+            "Settlement amount must be greater than zero",
+            "error"
+        );
+        return;
+    }
+
+    if(amount>b.balance){
+        showMessage(
+            "settlementMsg",
+            "Settlement amount cannot be greater than pending amount",
+            "error"
+        );
+        return;
+    }
+
+    const payment={
+        id:Date.now(),
+        billId:b.id,
+        invoice:b.invoice,
+        guest:b.guest,
+        date,
+        amount,
+        mode,
+        type:"Settlement",
+        remarks
+    };
+
+    b.paid+=amount;
+    b.balance=Math.max(b.total-b.paid,0);
+
+    if(!b.payments)b.payments=[];
+
+    b.payments.push(payment);
+    db.payments.push(payment);
+
+    if(b.balance===0){
+        b.status="SETTLED";
+    }else{
+        b.status="PENDING";
+    }
+
+    saveDB();
+
+    showMessage(
+        "settlementMsg",
+        "Payment received successfully. "+b.invoice+" updated.",
+        "success"
+    );
+
+    closeSettlementForm();
+
+    renderSettlementBills();
+    renderSettlementHistory();
+}
+
+function renderSettlementHistory(){
+
+    const tbody=document.getElementById("settlementHistory");
+    tbody.innerHTML="";
+
+    db.payments
+        .slice()
+        .reverse()
+        .forEach(p=>{
+
+            tbody.innerHTML+=`
+                <tr>
+                    <td>${p.date}</td>
+                    <td>${p.invoice}</td>
+                    <td>${p.guest}</td>
+                    <td>${money(p.amount)}</td>
+                    <td>${p.mode}</td>
+                    <td>${p.remarks || ""}</td>
+                </tr>
+            `;
+        });
+}
+
+
+/* =========================
+   MONTHLY REPORT
+========================= */
+
+function generateMonthlyReport(){
+
+    let month=document.getElementById("monthlyMonth").value;
+
+    if(!month){
+
+        month=new Date().toISOString().slice(0,7);
+
+        document.getElementById("monthlyMonth").value=month;
+    }
+
+    const bills=db.bills.filter(b=>{
+        const date=b.checkin || "";
+        return date.startsWith(month);
+    });
+
+    let totalSales=0;
+    let totalPaid=0;
+    let totalPending=0;
+    let totalNights=0;
+
+    let cash=0;
+    let upi=0;
+    let card=0;
+    let other=0;
+
+    bills.forEach(b=>{
+
+        totalSales+=Number(b.total||0);
+        totalPaid+=Number(b.paid||0);
+        totalPending+=Number(b.balance||0);
+        totalNights+=Number(b.nights||0);
+
+        /*
+           Payment collection is calculated from
+           actual payment history.
+        */
+
+        (b.payments || []).forEach(p=>{
+
+            const amount=Number(p.amount||0);
+
+            if(p.mode==="Cash")cash+=amount;
+            else if(p.mode==="UPI")upi+=amount;
+            else if(p.mode==="Card")card+=amount;
+            else other+=amount;
+        });
+    });
+
+    document.getElementById("monthBills").innerText=bills.length;
+
+    document.getElementById("monthGuests").innerText=
+        new Set(bills.map(b=>b.guestId)).size;
+
+    document.getElementById("monthNights").innerText=totalNights;
+
+    document.getElementById("monthSales").innerText=money(totalSales);
+    document.getElementById("monthPaid").innerText=money(totalPaid);
+    document.getElementById("monthPending").innerText=money(totalPending);
+
+    document.getElementById("monthCash").innerText=money(cash);
+    document.getElementById("monthUPI").innerText=money(upi);
+    document.getElementById("monthCard").innerText=money(card);
+    document.getElementById("monthOther").innerText=money(other);
+
+
+    /* Detailed Bills */
+
+    const tbody=document.getElementById("monthlyTable");
+
+    tbody.innerHTML="";
+
+    bills.forEach(b=>{
+
+        tbody.innerHTML+=`
+            <tr>
+                <td>${b.invoice}</td>
+                <td>${b.guest}</td>
+                <td>${b.room}</td>
+                <td>${b.checkin || "-"}</td>
+                <td>${b.checkout || "-"}</td>
+                <td>${money(b.total)}</td>
+                <td>${money(b.paid)}</td>
+                <td class="${b.balance>0?"pending":""}">
+                    ${money(b.balance)}
+                </td>
+                <td>${getMainPaymentMode(b)}</td>
+                <td class="${b.balance>0?"pending":"settled"}">
+                    ${b.balance>0?"PENDING":"SETTLED"}
+                </td>
+            </tr>
+        `;
+    });
+
+
+    /* Day-by-day */
+
+    const days={};
+
+    bills.forEach(b=>{
+
+        const d=b.checkin || month+"-01";
+
+        if(!days[d]){
+            days[d]={
+                bills:0,
+                sales:0,
+                paid:0,
+                pending:0
+            };
+        }
+
+        days[d].bills++;
+        days[d].sales+=Number(b.total||0);
+        days[d].paid+=Number(b.paid||0);
+        days[d].pending+=Number(b.balance||0);
+    });
+
+    const dayTable=document.getElementById("monthlyDayTable");
+
+    dayTable.innerHTML="";
+
+    Object.keys(days)
+        .sort()
+        .forEach(d=>{
+
+            const x=days[d];
+
+            dayTable.innerHTML+=`
+                <tr>
+                    <td>${d}</td>
+                    <td>${x.bills}</td>
+                    <td>${money(x.sales)}</td>
+                    <td>${money(x.paid)}</td>
+                    <td>${money(x.pending)}</td>
+                </tr>
+            `;
+        });
+}
+
+function getMainPaymentMode(b){
+
+    if(!b.payments || b.payments.length===0)return "-";
+
+    const modes={};
+
+    b.payments.forEach(p=>{
+        modes[p.mode]=(modes[p.mode]||0)+Number(p.amount||0);
+    });
+
+    return Object.keys(modes)
+        .sort((a,b)=>modes[b]-modes[a])[0];
+}
+
+function printMonthly(){
+    window.print();
+}
+
+
+/* =========================
+   DAILY REPORT
+========================= */
+
+function generateDailyReport(){
+
+    let date=document.getElementById("dailyDate").value;
+
+    if(!date){
+
+        date=today();
+
+        document.getElementById("dailyDate").value=date;
+    }
+
+    const bills=db.bills.filter(b=>
+        (b.checkin===date || b.checkout===date)
+    );
+
+    const checkins=db.guests.filter(g=>g.checkin===date).length;
+
+    const checkouts=db.guests.filter(g=>g.checkout===date).length;
+
+    const sales=bills.reduce((sum,b)=>sum+Number(b.total||0),0);
+
+    const paid=bills.reduce((sum,b)=>sum+Number(b.paid||0),0);
+
+    const pending=bills.reduce((sum,b)=>sum+Number(b.balance||0),0);
+
+    document.getElementById("dailyCheckins").innerText=checkins;
+    document.getElementById("dailyCheckouts").innerText=checkouts;
+    document.getElementById("dailySales").innerText=money(sales);
+    document.getElementById("dailyPaid").innerText=money(paid);
+    document.getElementById("dailyPending").innerText=money(pending);
+
+    const tbody=document.getElementById("dailyTable");
+
+    tbody.innerHTML="";
+
+    bills.forEach(b=>{
+
+        tbody.innerHTML+=`
+            <tr>
+                <td>${b.invoice}</td>
+                <td>${b.guest}</td>
+                <td>${b.room}</td>
+                <td>${money(b.total)}</td>
+                <td>${money(b.paid)}</td>
+                <td>${money(b.balance)}</td>
+                <td>${getMainPaymentMode(b)}</td>
+            </tr>
+        `;
+    });
+}
+
+function printDaily(){
+    window.print();
+}
+
+
+/* =========================
+   DASHBOARD
+========================= */
+
+function refreshDashboard(){
+
+    const available=db.rooms.filter(r=>r.status==="Available").length;
+    const occupied=db.rooms.filter(r=>r.status==="Occupied").length;
+
+    const checkins=db.guests.filter(g=>g.checkin===today()).length;
+
+    const checkouts=db.guests.filter(g=>g.checkout===today()).length;
+
+    const collection=db.payments
+        .filter(p=>p.date===today())
+        .reduce((sum,p)=>sum+Number(p.amount||0),0);
+
+    document.getElementById("dashRooms").innerText=db.rooms.length;
+    document.getElementById("dashAvailable").innerText=available;
+    document.getElementById("dashOccupied").innerText=occupied;
+    document.getElementById("dashCheckin").innerText=checkins;
+    document.getElementById("dashCheckout").innerText=checkouts;
+    document.getElementById("dashCollection").innerText=money(collection);
+}
+
+
+/* =========================
+   SETTINGS
+========================= */
+
+function loadSettings(){
+
+    const s=db.settings;
+
+    document.getElementById("settingHotelName").value=s.hotelName||"";
+    document.getElementById("settingMobile").value=s.mobile||"";
+    document.getElementById("settingEmail").value=s.email||"";
+    document.getElementById("settingGST").value=s.gst||"";
+    document.getElementById("settingAddress").value=s.address||"";
+
+    document.getElementById("hotelNameTop").innerText=
+        s.hotelName || "My Hotel";
+
+    document.getElementById("showHotelId").innerText=
+        db.hotelId || "-";
+}
+
+function saveSettings(){
+
+    db.settings.hotelName=
+        document.getElementById("settingHotelName").value;
+
+    db.settings.mobile=
+        document.getElementById("settingMobile").value;
+
+    db.settings.email=
+        document.getElementById("settingEmail").value;
+
+    db.settings.gst=
+        document.getElementById("settingGST").value;
+
+    db.settings.address=
+        document.getElementById("settingAddress").value;
+
+    saveDB();
+
+    alert("Settings saved");
+}
+
+
+/* =========================
+   BACKUP / RESTORE
+========================= */
+
+function exportBackup(){
+
+    const data=JSON.stringify(db,null,2);
+
+    const blob=new Blob(
+        [data],
+        {type:"application/json"}
+    );
+
+    const url=URL.createObjectURL(blob);
+
+    const a=document.createElement("a");
+
+    a.href=url;
+
+    a.download=
+        "Stay_Desk_Backup_"+today()+".json";
+
+    a.click();
+
+    URL.revokeObjectURL(url);
+}
+
+function restoreBackup(){
+
+    const file=
+        document.getElementById("restoreFile").files[0];
+
+    if(!file){
+        alert("Select backup file");
+        return;
+    }
+
+    const reader=new FileReader();
+
+    reader.onload=function(e){
+
+        try{
+
+            const restored=JSON.parse(e.target.result);
+
+            if(!restored.rooms ||
+               !restored.guests ||
+               !restored.bills){
+
+                throw new Error("Invalid backup");
+            }
+
+            db=restored;
+
+            saveDB();
+
+            alert("Backup restored successfully");
+
+        }catch(err){
+
+            alert("Invalid backup file");
+        }
+    };
+
+    reader.readAsText(file);
+}
+
+
+/* =========================
+   GLOBAL SEARCH
+========================= */
+
+function globalSearch(){
+
+    const q=document.getElementById("globalSearch")
+        .value
+        .trim()
+        .toLowerCase();
+
+    if(!q)return;
+
+    const guest=db.guests.find(g=>
+        g.name.toLowerCase().includes(q) ||
+        g.mobile.includes(q) ||
+        g.idNumber.toLowerCase().includes(q) ||
+        g.room.toLowerCase().includes(q)
+    );
+
+    const bill=db.bills.find(b=>
+        b.invoice.toLowerCase().includes(q) ||
+        b.guest.toLowerCase().includes(q) ||
+        b.room.toLowerCase().includes(q)
+    );
+
+    if(bill){
+        showPage("bills");
+        document.getElementById("billSearch").value=q;
+        renderBills();
+    }
+    else if(guest){
+        showPage("guests");
+        document.getElementById("guestSearch").value=q;
+        renderGuests();
+    }
+}
+
+
+/* =========================
+   MODAL
+========================= */
+
+function openModal(html){
+
+    document.getElementById("billModalContent").innerHTML=html;
+
+    document.getElementById("billModal")
+        .classList.add("show");
+}
+
+function closeModal(){
+
+    document.getElementById("billModal")
+        .classList.remove("show");
+}
+
+
+/* =========================
+   REFRESH EVERYTHING
+========================= */
+
+function refreshAll(){
+
+    renderRooms();
+    renderGuests();
+    renderCheckoutGuests();
+    renderBills();
+    renderSettlementBills();
+    renderSettlementHistory();
+    refreshDashboard();
+    loadSettings();
+
+    calculateEstimatedBill();
+}
+
+
+/* =========================
+   START
+========================= */
+
+(function start(){
+
+    if(db.hotelId && db.license){
+
+        document.getElementById("loginScreen").style.display="none";
+        document.getElementById("app").style.display="block";
+
+    }
+
+    document.getElementById("dailyDate").value=today();
+    document.getElementById("settlementDate").value=today();
+    document.getElementById("monthlyMonth").value=
+        new Date().toISOString().slice(0,7);
+
+    refreshAll();
+
+})();
+
+</script>
+
+</body>
+</html>
